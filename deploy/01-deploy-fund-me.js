@@ -4,7 +4,12 @@ const { verify } = require("../utils/verify")
 require("dotenv").config()
 
 module.exports = async ({ getNamedAccounts, deployments }) => {
+    // hre.getnamedaccounts() is a function that returns an object with all the named accounts
+    // hre.deployments is a collection of all the deployments made
+    // they are put inside of params and automatically are prefixed with hre (hardhat runtime environment ie hardhat power tools)
     const { deploy, log } = deployments
+    // pulling these two functions out of the deployments object
+    
     const { deployer } = await getNamedAccounts()
     const chainId = network.config.chainId
 

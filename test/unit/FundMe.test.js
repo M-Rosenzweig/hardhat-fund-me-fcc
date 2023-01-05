@@ -10,8 +10,10 @@ const { developmentChains } = require("../../helper-hardhat-config")
           let deployer
           const sendValue = ethers.utils.parseEther("1")
           beforeEach(async () => {
+              // this is a simple way to get the deployers account. we do an alternative way underneath.   
+
               // const accounts = await ethers.getSigners()
-              // deployer = accounts[0]
+              // deployer = accounts[0] 
               deployer = (await getNamedAccounts()).deployer
               await deployments.fixture(["all"])
               fundMe = await ethers.getContract("FundMe", deployer)
@@ -38,7 +40,7 @@ const { developmentChains } = require("../../helper-hardhat-config")
               })
               // we could be even more precise here by making sure exactly $50 works
               // but this is good enough for now
-              it("Updates the amount funded data structure", async () => {
+              it("Updates the amount funded in mapping to how much the individual sent it", async () => {
                   await fundMe.fund({ value: sendValue })
                   const response = await fundMe.getAddressToAmountFunded(
                       deployer
@@ -64,7 +66,7 @@ const { developmentChains } = require("../../helper-hardhat-config")
 
                   // Act
                   const transactionResponse = await fundMe.withdraw()
-                  const transactionReceipt = await transactionResponse.wait()
+                  const transactionReceipt = await transactionResponse.wait(1)
                   const { gasUsed, effectiveGasPrice } = transactionReceipt
                   const gasCost = gasUsed.mul(effectiveGasPrice)
 
@@ -117,9 +119,10 @@ const { developmentChains } = require("../../helper-hardhat-config")
                       await fundMe.provider.getBalance(deployer)
                   // Assert
                   assert.equal(
-                      startingFundMeBalance
+                      startingFundMeBalance // starts off with one eth because of the original before each places 1 eth inside. 
                           .add(startingDeployerBalance)
                           .toString(),
+
                       endingDeployerBalance.add(withdrawGasCost).toString()
                   )
                   // Make a getter for storage variables
